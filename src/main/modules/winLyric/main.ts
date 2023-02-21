@@ -9,10 +9,11 @@ import { encodePath } from '@common/utils/electron'
 // require('./rendererEvent')
 
 let browserWindow: Electron.BrowserWindow | null = null
+let isWinBoundsUdating = false
 
-
-const setLyricsConfig = debounce((config: Partial<LX.AppSetting>) => {
+const saveBoundsConfig = debounce((config: Partial<LX.AppSetting>) => {
   global.lx.event_app.update_config(config)
+  if (isWinBoundsUdating) isWinBoundsUdating = false
 }, 500)
 
 const winEvent = () => {
@@ -31,21 +32,31 @@ const winEvent = () => {
 
   browserWindow.on('move', () => {
     // bounds = browserWindow.getBounds()
-    // console.log(bounds)
-    const bounds = browserWindow!.getBounds()
-    setLyricsConfig({
-      'desktopLyric.x': bounds.x,
-      'desktopLyric.y': bounds.y,
-      'desktopLyric.width': bounds.width,
-      'desktopLyric.height': bounds.height,
-    })
+    // console.log('move', isWinBoundsUdating)
+    if (isWinBoundsUdating) {
+      const bounds = browserWindow!.getBounds()
+      saveBoundsConfig({
+        'desktopLyric.x': bounds.x,
+        'desktopLyric.y': bounds.y,
+        'desktopLyric.width': bounds.width,
+        'desktopLyric.height': bounds.height,
+      })
+    } else {
+      // 非主动调整窗口触发的窗口位置变化将重置回设置值
+      browserWindow!.setBounds({
+        x: global.lx.appSetting['desktopLyric.x'] ?? 0,
+        y: global.lx.appSetting['desktopLyric.y'] ?? 0,
+        width: global.lx.appSetting['desktopLyric.width'],
+        height: global.lx.appSetting['desktopLyric.height'],
+      })
+    }
   })
 
   browserWindow.on('resize', () => {
     // bounds = browserWindow.getBounds()
     // console.log(bounds)
     const bounds = browserWindow!.getBounds()
-    setLyricsConfig({
+    saveBoundsConfig({
       'desktopLyric.x': bounds.x,
       'desktopLyric.y': bounds.y,
       'desktopLyric.width': bounds.width,
@@ -66,9 +77,9 @@ const winEvent = () => {
       browserWindow!.setIgnoreMouseEvents(true, { forward: !isLinux && global.lx.appSetting['desktopLyric.isHoverHide'] })
     }
     // linux下每次重开时貌似要重新设置置顶
-    if (isLinux && global.lx.appSetting['desktopLyric.isAlwaysOnTop']) {
-      browserWindow!.setAlwaysOnTop(global.lx.appSetting['desktopLyric.isAlwaysOnTop'], 'screen-saver')
-    }
+    // if (isLinux && global.lx.appSetting['desktopLyric.isAlwaysOnTop']) {
+    //   browserWindow!.setAlwaysOnTop(global.lx.appSetting['desktopLyric.isAlwaysOnTop'], 'screen-saver')
+    // }
     if (global.lx.appSetting['desktopLyric.isAlwaysOnTop'] && global.lx.appSetting['desktopLyric.isAlwaysOnTopLoop']) alwaysOnTopTools.startLoop()
   })
 }
@@ -100,6 +111,12 @@ export const createWindow = () => {
     width = bounds.width
     height = bounds.height
   }
+  global.lx.event_app.update_config({
+    'desktopLyric.x': x,
+    'desktopLyric.y': y,
+    'desktopLyric.width': width,
+    'desktopLyric.height': height,
+  })
 
   const { shouldUseDarkColors, theme } = global.lx.theme
 
@@ -166,6 +183,7 @@ export const getBounds = (): Electron.Rectangle => {
 
 export const setBounds = (bounds: Electron.Rectangle) => {
   if (!browserWindow) return
+  isWinBoundsUdating = true
   browserWindow.setBounds(bounds)
 }
 

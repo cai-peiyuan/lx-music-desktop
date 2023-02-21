@@ -69,6 +69,16 @@ declare global {
       'common.playBarProgressStyle': 'mini' | 'full' | 'middle'
 
       /**
+       * 尝试自动更新
+       */
+      'common.tryAutoUpdate': boolean
+
+      /**
+       * 更新版本后是否显示变更日志
+       */
+      'common.showChangeLog': boolean
+
+      /**
        * 启动时自动播放歌曲
        */
       'player.startupAutoPlay': boolean
@@ -97,6 +107,11 @@ declare global {
        * 是否静音
        */
       'player.isMute': boolean
+
+      /**
+       * 播放速率
+       */
+      'player.playbackRate': number
 
       /**
        * 音频输出设备id
@@ -305,6 +320,21 @@ declare global {
       'desktopLyric.style.isZoomActiveLrc': boolean
 
       /**
+       * 是否加粗逐字歌词字体
+       */
+      'desktopLyric.style.isFontWeightFont': boolean
+
+      /**
+       * 是否加粗逐行歌词字体
+       */
+      'desktopLyric.style.isFontWeightLine': boolean
+
+      /**
+       * 是否加粗翻译、罗马音字体
+       */
+      'desktopLyric.style.isFontWeightExtended': boolean
+
+      /**
        * 是否启用双击列表里的歌曲时自动切换到当前列表播放（仅对歌单、排行榜有效）
        */
       'list.isClickPlayList': boolean
@@ -383,6 +413,16 @@ declare global {
        * 是否在音频文件中嵌入歌词
        */
       'download.isEmbedLyric': boolean
+
+      /**
+       * 是否在音频文件中嵌入翻译歌词
+       */
+      'download.isEmbedLyricT': boolean
+
+      /**
+       * 是否在音频文件中嵌入罗马音歌词
+       */
+      'download.isEmbedLyricR': boolean
 
       /**
        * 歌曲源不可用时，是否启用换源下载

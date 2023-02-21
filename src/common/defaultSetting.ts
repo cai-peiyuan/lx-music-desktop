@@ -16,6 +16,8 @@ const defaultSetting: LX.AppSetting = {
   'common.isAgreePact': false,
   'common.controlBtnPosition': process.platform === 'darwin' ? 'left' : 'right',
   'common.playBarProgressStyle': 'mini',
+  'common.tryAutoUpdate': true,
+  'common.showChangeLog': true,
 
   'player.startupAutoPlay': false,
   'player.togglePlayMethod': 'listLoop',
@@ -23,6 +25,7 @@ const defaultSetting: LX.AppSetting = {
   'player.isShowTaskProgess': true,
   'player.volume': 1,
   'player.isMute': false,
+  'player.playbackRate': 1,
   'player.mediaDeviceId': 'default',
   'player.isMediaDeviceRemovedStopPlay': false,
   'player.isShowLyricTranslation': false,
@@ -58,14 +61,17 @@ const defaultSetting: LX.AppSetting = {
   'desktopLyric.style.align': 'center',
   'desktopLyric.style.font': '',
   'desktopLyric.style.fontSize': 20,
-  'desktopLyric.style.lineGap': 14,
+  'desktopLyric.style.lineGap': 15,
   'desktopLyric.style.lyricUnplayColor': 'rgba(255, 255, 255, 1)',
   'desktopLyric.style.lyricPlayedColor': 'rgba(7, 197, 86, 1)',
-  'desktopLyric.style.lyricShadowColor': 'rgba(0, 0, 0, 0.15)',
+  'desktopLyric.style.lyricShadowColor': 'rgba(0, 0, 0, 0.18)',
   // 'desktopLyric.style.fontWeight': false,
   'desktopLyric.style.opacity': 95,
   'desktopLyric.style.ellipsis': false,
   'desktopLyric.style.isZoomActiveLrc': true,
+  'desktopLyric.style.isFontWeightFont': true,
+  'desktopLyric.style.isFontWeightLine': false,
+  'desktopLyric.style.isFontWeightExtended': false,
 
   'list.isClickPlayList': false,
   'list.isShowSource': true,
@@ -84,6 +90,8 @@ const defaultSetting: LX.AppSetting = {
   'download.lrcFormat': 'utf8',
   'download.isEmbedPic': true,
   'download.isEmbedLyric': false,
+  'download.isEmbedLyricT': false,
+  'download.isEmbedLyricR': false,
   'download.isUseOtherSource': false,
 
   'search.isShowHotSearch': false,
@@ -117,7 +125,7 @@ const defaultSetting: LX.AppSetting = {
 // 使用新年皮肤
 if (new Date().getMonth() < 2) {
   defaultSetting['theme.id'] = 'happy_new_year'
-  defaultSetting['desktopLyric.style.lyricPlayedColor'] = 'rgba(255, 18, 34, 1)'
+  defaultSetting['desktopLyric.style.lyricPlayedColor'] = 'rgba(255, 57, 71, 1)'
 }
 
 

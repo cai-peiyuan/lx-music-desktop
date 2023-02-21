@@ -76,11 +76,15 @@ export const watchConfigKeys = [
   // 'desktopLyric.style.fontWeight',
   'desktopLyric.style.opacity',
   'desktopLyric.style.ellipsis',
+  'desktopLyric.style.isFontWeightFont',
+  'desktopLyric.style.isFontWeightLine',
+  'desktopLyric.style.isFontWeightExtended',
   'desktopLyric.style.isZoomActiveLrc',
   'common.langId',
   'player.isShowLyricTranslation',
   'player.isShowLyricRoma',
   'player.isPlayLxlrc',
+  'player.playbackRate',
 ] as const
 
 export const buildLyricConfig = (appSetting: Partial<LX.AppSetting>): Partial<LX.DesktopLyric.Config> => {

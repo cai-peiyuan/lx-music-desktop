@@ -38,6 +38,8 @@ export const DATA_KEYS = {
   leaderboardSetting: 'leaderboardSetting',
   songListSetting: 'songListSetting',
   searchSetting: 'searchSetting',
+
+  lastStartInfo: 'lastStartInfo',
 } as const
 
 export const DEFAULT_SETTING = {

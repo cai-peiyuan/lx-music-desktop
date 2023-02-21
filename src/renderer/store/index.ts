@@ -2,7 +2,7 @@ import { ref, reactive, shallowRef, markRaw, computed, watch } from '@common/uti
 import { windowSizeList as configWindowSizeList } from '@common/config'
 import { appSetting } from './setting'
 import pkg from '../../../package.json'
-import { ProgressInfo } from 'electron-updater'
+import { type ProgressInfo } from 'electron-updater'
 import music from '@renderer/utils/musicSdk'
 process.versions.app = pkg.version
 
@@ -85,23 +85,19 @@ export const versionInfo = window.lxData.versionInfo = reactive<{
     history?: LX.VersionInfo[]
   } | null
   showModal: boolean
-  isError: boolean
-  isTimeOut: boolean
-  isUnknow: boolean
-  isDownloaded: boolean
-  isDownloading: boolean
-  isLatestVer: boolean
+  isUnknown: boolean
+  isLatest: boolean
+  reCheck: boolean
+  status: LX.UpdateStatus
   downloadProgress: ProgressInfo | null
 }>({
   version: pkg.version,
   newVersion: null,
   showModal: false,
-  isError: false,
-  isTimeOut: false,
-  isUnknow: false,
-  isDownloaded: false,
-  isDownloading: false,
-  isLatestVer: false,
+  reCheck: false,
+  isUnknown: false,
+  isLatest: false,
+  status: 'checking',
   downloadProgress: null,
 })
 export const userApi = reactive<{
@@ -115,6 +111,9 @@ export const userApi = reactive<{
   message: 'initing',
   apis: {},
 })
+
+export const isShowChangeLog = ref(false)
+
 
 export const isFullscreen = ref(false)
 watch(isFullscreen, isFullscreen => {

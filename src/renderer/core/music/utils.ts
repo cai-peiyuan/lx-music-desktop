@@ -119,16 +119,19 @@ export const getCachedLyricInfo = async(musicInfo: LX.Music.MusicInfo): Promise<
     // }
 
     if (lrcInfo.lxlyric == null) {
-      switch (musicInfo.source) {
+      switch (musicInfo.source) { // 以下源支持lxlyric 重新获取
         case 'kg':
         case 'kw':
         case 'mg':
+        case 'wy':
+        case 'tx':
           break
         default:
           return lrcInfo
       }
     } else if (lrcInfo.rlyric == null) {
-      if (!['wy', 'kg'].includes(musicInfo.source)) return lrcInfo
+      // 以下源支持 rlyric 重新获取
+      if (!['wy', 'kg', 'tx'].includes(musicInfo.source)) return lrcInfo
     } else return lrcInfo
   }
   return null

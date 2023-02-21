@@ -1,7 +1,7 @@
 <template>
   <div
     ref="dom_lyric"
-    :class="[$style.lyric, { [$style.draging]: isMsDown }, { [$style.lrcActiveZoom]: isZoomActiveLrc }, { [$style.ellipsis]: ellipsis } ]"
+    :class="classNames"
     :style="lrcStyles" @wheel="handleWheel" @mousedown="handleLyricMouseDown" @touchstart="handleLyricTouchStart"
   >
     <div :class="$style.lyricSpace" />
@@ -12,14 +12,26 @@
 
 <script>
 import { setting } from '@lyric/store/state'
-import { computed } from '@common/utils/vueTools'
+import { computed, useCssModule } from '@common/utils/vueTools'
 import useLyric from './useLyric'
 
 export default {
   setup() {
-    const isZoomActiveLrc = computed(() => setting['desktopLyric.style.isZoomActiveLrc'])
-    const ellipsis = computed(() => setting['desktopLyric.style.ellipsis'])
-    // const fontWeight = computed(() => setting['desktopLyric.style.fontWeight'])
+    const styles = useCssModule()
+    // const isZoomActiveLrc = computed(() => setting['desktopLyric.style.isZoomActiveLrc'])
+    // const ellipsis = computed(() => setting['desktopLyric.style.ellipsis'])
+    // const isFontWeightFont = computed(() => setting['desktopLyric.style.isFontWeightFont'])
+    // const isFontWeightLine = computed(() => setting['desktopLyric.style.isFontWeightLine'])
+    const classNames = computed(() => {
+      const name = [styles.lyric]
+      if (isMsDown.value) name.push(styles.draging)
+      if (setting['desktopLyric.style.isZoomActiveLrc']) name.push(styles.lrcActiveZoom)
+      if (setting['desktopLyric.style.ellipsis']) name.push(styles.ellipsis)
+      if (setting['desktopLyric.style.isFontWeightFont']) name.push(styles.fontWeightFont)
+      if (setting['desktopLyric.style.isFontWeightLine']) name.push(styles.fontWeightLine)
+      if (setting['desktopLyric.style.isFontWeightExtended']) name.push(styles.fontWeightExtended)
+      return name
+    })
     const lrcStyles = computed(() => ({
       fontFamily: setting['desktopLyric.style.font'],
       fontSize: Math.trunc(setting['desktopLyric.style.fontSize']) + 'px',
@@ -38,10 +50,8 @@ export default {
     } = useLyric()
 
     return {
-      isZoomActiveLrc,
+      classNames,
       lrcStyles,
-      ellipsis,
-      // fontWeight,
 
       dom_lyric,
       dom_lyric_text,
@@ -74,13 +84,14 @@ export default {
   :global {
     .font-lrc, .shadow {
       padding: 0.14em 0.07em;
+      margin: 0 -0.07em;
     }
     .font-lrc {
       color: var(--color-lyric-unplay);
     }
     .shadow {
       color: transparent;
-      margin-left: -0.14em;
+      // margin-left: -0.14em;
     }
     .line-content {
       line-height: 1.2;
@@ -109,9 +120,9 @@ export default {
         transition: @transition-slow;
         transition-property: font-size, color;
       }
-      &.font-mode > .line {
-        font-weight: bold;
-      }
+      // &.font-mode > .line {
+      //   font-weight: bold;
+      // }
 
       &.font-mode > .line > .font-lrc {
         > span {
@@ -124,12 +135,14 @@ export default {
           -webkit-text-fill-color: transparent;
           -webkit-background-clip: text;
           background-size: 0 100%;
-          padding: 2px;
+          padding: 0.14em;
+          margin: -0.08em;
         }
       }
 
       &.font-mode .line .shadow span {
-        padding: 2px;
+        padding: 0.14em;
+        margin: -0.08em;
       }
     }
     // .shadow {
@@ -143,7 +156,7 @@ export default {
     .line-mode .font-lrc, .extended .font-lrc {
       // text-shadow: 0 0 2px rgba(0, 0, 0, 0.7), 0 0 2px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.3);
       // .stroke2(rgba(0, 0, 0, 0.14));
-      .stroke2(var(--color-lyric-shadow));
+      .stroke4(var(--color-lyric-shadow));
       // .stroke(1px, rgba(0, 0, 0, 0.08));
       // .stroke(2px, rgba(0, 0, 0, 0.025));
       transition: font-size @transition-slow;
@@ -232,13 +245,27 @@ export default {
     }
   }
 }
-// .font-weight {
-//   :global {
-//     .font-mode > .line {
-//       font-weight: bold;
-//     }
-//   }
-// }
+.font-weight-font {
+  :global {
+    .font-mode > .line {
+      font-weight: bold;
+    }
+  }
+}
+.font-weight-line {
+  :global {
+    .line-mode > .line {
+      font-weight: bold;
+    }
+  }
+}
+.font-weight-extended {
+  :global {
+    .extended {
+      font-weight: bold;
+    }
+  }
+}
 // .footer {
 //   flex: 0 0 100px;
 //   overflow: hidden;

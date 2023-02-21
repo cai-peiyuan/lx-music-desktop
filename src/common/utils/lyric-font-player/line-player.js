@@ -2,6 +2,8 @@ const { getNow, TimeoutTools } = require('./utils')
 
 const timeFieldExp = /^(?:\[[\d:.]+\])+/g
 const timeExp = /[\d:.]+/g
+const timeLabelRxp = /^(\[[\d:]+\.)0+(\d+\])/
+const timeLabelFixRxp = /(?:\.0+|0+)$/
 const tagRegMap = {
   title: 'ti',
   artist: 'ar',
@@ -24,8 +26,9 @@ const parseExtendedLyric = (lrcLinesMap, extendedLyric) => {
         const times = timeField.match(timeExp)
         if (times == null) continue
         for (let time of times) {
-          if (!time.includes('.')) time += '.0'
-          const timeStr = time.replace(/(?:\.0+|0+)$/, '')
+          if (time.includes('.')) time = time.replace(timeLabelRxp, '$1$2')
+          else time += '.0'
+          const timeStr = time.replace(timeLabelFixRxp, '')
           const targetLine = lrcLinesMap[timeStr]
           if (targetLine) targetLine.extendedLyrics.push(text)
         }
@@ -35,7 +38,7 @@ const parseExtendedLyric = (lrcLinesMap, extendedLyric) => {
 }
 
 module.exports = class LinePlayer {
-  constructor({ offset = 0, onPlay = function() { }, onSetLyric = function() { } } = {}) {
+  constructor({ offset = 0, rate = 1, onPlay = function() { }, onSetLyric = function() { } } = {}) {
     this.tags = {}
     this.lines = null
     this.onPlay = onPlay
@@ -46,6 +49,7 @@ module.exports = class LinePlayer {
     this.offset = offset
     this._performanceTime = 0
     this._startTime = 0
+    this._rate = rate
   }
 
   _init() {
@@ -84,8 +88,9 @@ module.exports = class LinePlayer {
           const times = timeField.match(timeExp)
           if (times == null) continue
           for (let time of times) {
-            if (!time.includes('.')) time += '.0'
-            const timeStr = time.replace(/(?:\.0+|0+)$/, '')
+            if (time.includes('.')) time = time.replace(timeLabelRxp, '$1$2')
+            else time += '.0'
+            const timeStr = time.replace(timeLabelFixRxp, '')
             if (linesMap[timeStr]) {
               linesMap[timeStr].extendedLyrics.push(text)
               continue
@@ -115,7 +120,7 @@ module.exports = class LinePlayer {
   }
 
   _currentTime() {
-    return getNow() - this._performanceTime + this._startTime
+    return (getNow() - this._performanceTime) * this._rate + this._startTime
   }
 
   _findCurLineNum(curTime, startIndex = 0) {
@@ -142,14 +147,14 @@ module.exports = class LinePlayer {
 
     if (driftTime >= 0 || this.curLineNum === 0) {
       let nextLine = this.lines[this.curLineNum + 1]
-      this.delay = nextLine.time - curLine.time - driftTime
+      const delay = (nextLine.time - curLine.time - driftTime) / this._rate
 
-      if (this.delay > 0) {
+      if (delay > 0) {
         if (this.isPlay) {
           timeoutTools.start(() => {
             if (!this.isPlay) return
             this._refresh()
-          }, this.delay)
+          }, delay)
         }
         this.onPlay(this.curLineNum, curLine.text, currentTime)
         return
@@ -189,6 +194,13 @@ module.exports = class LinePlayer {
       this.curLineNum = curLineNum
       this.onPlay(curLineNum, this.lines[curLineNum].text, currentTime)
     }
+  }
+
+  setPlaybackRate(rate) {
+    this._rate = rate
+    if (!this.lines.length) return
+    if (!this.isPlay) return
+    this.play(this._currentTime())
   }
 
   setLyric(lyric, extendedLyrics) {

@@ -4,10 +4,10 @@ module.exports = {
     'electron',
     'chalk',
     'del',
+    'comlink',
   ],
   // target: 'newest',
   // filter: [
-  //   /^vue/,
   //   'electron-builder',
   //   'electron-updater',
   // ],

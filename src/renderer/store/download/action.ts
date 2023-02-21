@@ -148,13 +148,18 @@ const saveMeta = (downloadInfo: LX.Download.ListItem) => {
       : Promise.resolve(null),
   ]
   void Promise.all(tasks).then(([imgUrl, lyrics]) => {
-    if (lyrics?.lyric) lyrics.lyric = fixKgLyric(lyrics.lyric)
+    let lyric: null | string = null
+    if (lyrics?.lyric) {
+      lyric = fixKgLyric(lyrics.lyric)
+      if (appSetting['download.isEmbedLyricT'] && lyrics.tlyric) lyric += '\n' + lyrics.tlyric + '\n'
+      if (appSetting['download.isEmbedLyricR'] && lyrics.rlyric) lyric += '\n' + lyrics.rlyric + '\n'
+    }
     void window.lx.worker.download.writeMeta(downloadInfo.metadata.filePath, {
       title: downloadInfo.metadata.musicInfo.name,
       artist: downloadInfo.metadata.musicInfo.singer,
       album: downloadInfo.metadata.musicInfo.meta.albumName,
       APIC: imgUrl,
-      lyrics: lyrics?.lyric ?? null,
+      lyrics: lyric,
     })
   })
 }
@@ -255,10 +260,10 @@ const handleStartTask = async(downloadInfo: LX.Download.ListItem) => {
         setProgress(downloadInfo, event.data)
         break
       case 'error':
-        handleError(downloadInfo, event.data.error == null
-          ? event.data.message ?? undefined
-          // @ts-expect-error
-          : window.i18n.t(event.data.error) + (event.data.message ?? ''))
+        handleError(downloadInfo, event.data.error
+          ? window.i18n.t(event.data.error) + (event.data.message ?? '')
+          : event.data.message,
+        )
         break
       default:
         break
@@ -368,15 +373,13 @@ export const pauseDownloadTasks = async(list: LX.Download.ListItem[]) => {
 export const removeDownloadTasks = async(ids: string[]) => {
   await downloadTasksRemove(ids)
 
-  const listSet = new Set<string>()
-  for (const item of downloadList) listSet.add(item.id)
-  for (const id of ids) listSet.delete(id)
+  const idsSet = new Set<string>(ids)
   const newList = downloadList.filter(task => {
     if (runingTask.has(task.id)) {
       void window.lx.worker.download.removeTask(task.id)
       runingTask.delete(task.id)
     }
-    return listSet.has(task.id)
+    return !idsSet.has(task.id)
   })
   downloadList.splice(0, downloadList.length)
   arrPush(downloadList, newList)
