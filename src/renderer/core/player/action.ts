@@ -72,6 +72,7 @@ const getMusicPlayUrl = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListIt
     if (window.lx.isPlayedStop || diffCurrentMusicInfo(musicInfo)) return null
 
     return url
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
   }).catch(err => {
     // console.log('err', err.message)
     if (window.lx.isPlayedStop ||
@@ -109,6 +110,7 @@ const handleRestorePlay = async(restorePlayInfo: LX.Player.SavedPlayInfo) => {
   if (!musicInfo) return
 
   setImmediate(() => {
+    if (musicInfo.id != playMusicInfo.musicInfo?.id) return
     window.app_event.setProgress(appSetting['player.isSavePlayTime'] ? restorePlayInfo.time : 0, restorePlayInfo.maxTime)
   })
 
@@ -194,6 +196,7 @@ const handlePlay = () => {
  */
 export const playList = (listId: string, index: number) => {
   setPlayListId(listId)
+  pause()
   setPlayMusicInfo(listId, getList(listId)[index])
   clearPlayedList()
   clearTempPlayeList()
@@ -216,6 +219,7 @@ export const playNext = async(isAutoToggle = false): Promise<void> => {
   if (tempPlayList.length) { // 如果稍后播放列表存在歌曲则直接播放改列表的歌曲
     const playMusicInfo = tempPlayList[0]
     removeTempPlayList(0)
+    pause()
     setPlayMusicInfo(playMusicInfo.listId, playMusicInfo.musicInfo, playMusicInfo.isTempPlay)
     handlePlay()
     return
@@ -256,6 +260,7 @@ export const playNext = async(isAutoToggle = false): Promise<void> => {
 
     if (index < playedList.length) {
       const playMusicInfo = playedList[index]
+      pause()
       setPlayMusicInfo(playMusicInfo.listId, playMusicInfo.musicInfo, playMusicInfo.isTempPlay)
       handlePlay()
       return
@@ -310,6 +315,7 @@ export const playNext = async(isAutoToggle = false): Promise<void> => {
     isTempPlay: false,
   }
 
+  pause()
   setPlayMusicInfo(nextPlayMusicInfo.listId, nextPlayMusicInfo.musicInfo)
   handlePlay()
 }
@@ -352,6 +358,7 @@ export const playPrev = async(isAutoToggle = false): Promise<void> => {
 
     if (index > -1) {
       const playMusicInfo = playedList[index]
+      pause()
       setPlayMusicInfo(playMusicInfo.listId, playMusicInfo.musicInfo, playMusicInfo.isTempPlay)
       handlePlay()
       return
@@ -406,6 +413,7 @@ export const playPrev = async(isAutoToggle = false): Promise<void> => {
     isTempPlay: false,
   }
 
+  pause()
   setPlayMusicInfo(nextPlayMusicInfo.listId, nextPlayMusicInfo.musicInfo)
   handlePlay()
 }

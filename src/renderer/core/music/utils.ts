@@ -266,7 +266,7 @@ export const getOnlineOtherSourcePicUrl = async({ musicInfos, onToggleSource, is
 
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo)).promise
+    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
@@ -296,7 +296,7 @@ export const handleGetOnlinePicUrl = async({ musicInfo, isRefresh, onToggleSourc
   // console.log(musicInfo.source)
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo)).promise
+    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
   } catch (err) {
     reqPromise = Promise.reject(err)
   }
@@ -358,6 +358,7 @@ export const getOnlineOtherSourceLyricInfo = async({ musicInfos, onToggleSource,
     reqPromise = Promise.reject(err)
   }
   retryedSource.includes(musicInfo.source)
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
   return reqPromise.then((lyricInfo: LX.Music.LyricInfo) => {
     return existTimeExp.test(lyricInfo.lyric) ? {
       lyricInfo,
@@ -392,6 +393,7 @@ export const handleGetOnlineLyricInfo = async({ musicInfo, onToggleSource, isRef
   } catch (err) {
     reqPromise = Promise.reject(err)
   }
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
   return reqPromise.then((lyricInfo: LX.Music.LyricInfo) => {
     return existTimeExp.test(lyricInfo.lyric) ? {
       musicInfo,

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from '@common/utils/vueTools'
+import { ref } from '@common/utils/vueTools'
 import usePlayProgress from '@renderer/utils/compositions/usePlayProgress'
 import { isShowPlayerDetail } from '@renderer/store/player/state'
 
@@ -28,9 +28,10 @@ export default {
     const dom_btn = ref<HTMLElement | null>(null)
 
     const handleShowPopup = (evt) => {
-      if (visible.value) evt.stopPropagation()
-      if (visible.value) handlMsLeave()
-      else handlMsEnter()
+      if (visible.value) {
+        evt.stopPropagation()
+        handlMsLeave()
+      } else handlMsEnter()
     }
     const {
       nowPlayTimeStr,
@@ -68,12 +69,12 @@ export default {
       visibleProgress.value = false
     }
 
-    onMounted(() => {
-      visible.value = true
-      requestAnimationFrame(() => {
-        visible.value = false
-      })
-    })
+    // onMounted(() => {
+    //   visible.value = true
+    //   requestAnimationFrame(() => {
+    //     visible.value = false
+    //   })
+    // })
 
     return {
       visible,

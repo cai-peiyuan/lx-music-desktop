@@ -1,8 +1,11 @@
 import { join } from 'path'
 import { homedir } from 'os'
 
+const isMac = process.platform == 'darwin'
+const isWin = process.platform == 'win32'
+
 const defaultSetting: LX.AppSetting = {
-  version: '2.0.0',
+  version: '2.1.0',
 
   'common.windowSizeId': 3,
   'common.fontSize': 16,
@@ -14,7 +17,7 @@ const defaultSetting: LX.AppSetting = {
   'common.isShowAnimation': true,
   'common.randomAnimate': true,
   'common.isAgreePact': false,
-  'common.controlBtnPosition': process.platform === 'darwin' ? 'left' : 'right',
+  'common.controlBtnPosition': isMac ? 'left' : 'right',
   'common.playBarProgressStyle': 'mini',
   'common.tryAutoUpdate': true,
   'common.showChangeLog': true,
@@ -31,7 +34,7 @@ const defaultSetting: LX.AppSetting = {
   'player.isShowLyricTranslation': false,
   'player.isShowLyricRoma': false,
   'player.isS2t': false,
-  'player.isPlayLxlrc': false,
+  'player.isPlayLxlrc': isWin,
   'player.isSavePlayTime': false,
   'player.audioVisualization': false,
   'player.waitPlayEndStop': true,
@@ -49,6 +52,7 @@ const defaultSetting: LX.AppSetting = {
   'desktopLyric.isAlwaysOnTopLoop': false,
   'desktopLyric.isShowTaskbar': false,
   'desktopLyric.audioVisualization': false,
+  'desktopLyric.fullscreenHide': true,
   'desktopLyric.width': 450,
   'desktopLyric.height': 300,
   'desktopLyric.x': null,
@@ -68,10 +72,10 @@ const defaultSetting: LX.AppSetting = {
   // 'desktopLyric.style.fontWeight': false,
   'desktopLyric.style.opacity': 95,
   'desktopLyric.style.ellipsis': false,
-  'desktopLyric.style.isZoomActiveLrc': true,
+  'desktopLyric.style.isZoomActiveLrc': false,
   'desktopLyric.style.isFontWeightFont': true,
-  'desktopLyric.style.isFontWeightLine': false,
-  'desktopLyric.style.isFontWeightExtended': false,
+  'desktopLyric.style.isFontWeightLine': true,
+  'desktopLyric.style.isFontWeightExtended': true,
 
   'list.isClickPlayList': false,
   'list.isShowSource': true,
@@ -108,8 +112,11 @@ const defaultSetting: LX.AppSetting = {
   // 'tray.isToTray': false,
   'tray.themeId': 0,
 
+  'sync.mode': 'server',
   'sync.enable': false,
-  'sync.port': '23332',
+  'sync.server.port': '23332',
+  'sync.server.maxSsnapshotNum': 5,
+  'sync.client.host': '',
 
   'theme.id': 'blue_plus',
   // 'theme.id': 'green',
