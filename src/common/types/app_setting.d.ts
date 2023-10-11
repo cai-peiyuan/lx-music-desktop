@@ -1,4 +1,4 @@
-import type { I18n } from '@/lang/i18n'
+import type { I18n } from '@root/lang/i18n'
 
 declare global {
 
@@ -114,6 +114,11 @@ declare global {
       'player.playbackRate': number
 
       /**
+       * 是否自动调整音频的音高以补偿对播放速率设置所做的更改
+       */
+      'player.preservesPitch': boolean
+
+      /**
        * 音频输出设备id
        */
       'player.mediaDeviceId': string
@@ -164,9 +169,99 @@ declare global {
       'player.waitPlayEndStopTime': string
 
       /**
+       * 环境音效文件名
+       */
+      'player.soundEffect.convolution.fileName': string | null
+
+      /**
+       * 环境音效原始输出增益
+       */
+      'player.soundEffect.convolution.mainGain': number
+
+      /**
+       * 环境音效输出增益
+       */
+      'player.soundEffect.convolution.sendGain': number
+
+      /**
+       * 均衡器 31hz 值
+       */
+      'player.soundEffect.biquadFilter.hz31': number
+
+      /**
+       * 均衡器 62hz 值
+       */
+      'player.soundEffect.biquadFilter.hz62': number
+
+      /**
+       * 均衡器 125hz 值
+       */
+      'player.soundEffect.biquadFilter.hz125': number
+
+      /**
+       * 均衡器 250hz 值
+       */
+      'player.soundEffect.biquadFilter.hz250': number
+
+      /**
+       * 均衡器 500hz 值
+       */
+      'player.soundEffect.biquadFilter.hz500': number
+
+      /**
+       * 均衡器 1000hz 值
+       */
+      'player.soundEffect.biquadFilter.hz1000': number
+
+      /**
+       * 均衡器 2000hz 值
+       */
+      'player.soundEffect.biquadFilter.hz2000': number
+
+      /**
+       * 均衡器 4000hz 值
+       */
+      'player.soundEffect.biquadFilter.hz4000': number
+
+      /**
+       * 均衡器 8000hz 值
+       */
+      'player.soundEffect.biquadFilter.hz8000': number
+
+      /**
+       * 均衡器 16000hz 值
+       */
+      'player.soundEffect.biquadFilter.hz16000': number
+
+      /**
+       * 3D立体环绕是否启用
+       */
+      'player.soundEffect.panner.enable': boolean
+
+      /**
+       * 3D立体环绕声音距离
+       */
+      'player.soundEffect.panner.soundR': number
+
+      /**
+       * 3D立体环绕速度
+       */
+      'player.soundEffect.panner.speed': number
+
+      /**
+       * 升降声调
+       */
+      'player.soundEffect.pitchShifter.playbackRate': number
+
+      /**
        * 是否启用音频加载失败时自动切歌
        */
       'player.autoSkipOnError': boolean
+
+      /**
+       * 点击相同列表内的歌曲切歌时是否清空已播放列表（随机模式下列表内所有歌曲会重新参与随机）
+       */
+      'player.isAutoCleanPlayedList': boolean
 
       /**
        * 播放详情页-是否缩放当前播放的歌词行

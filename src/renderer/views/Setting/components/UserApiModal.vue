@@ -1,27 +1,27 @@
 <template lang="pug">
-material-modal(:show="modelValue" bg-close @close="handleClose" teleport="#view")
+material-modal(:show="modelValue" bg-close teleport="#view" @close="handleClose")
   main(:class="$style.main")
-    h2 {{$t('user_api__title')}}
+    h2 {{ $t('user_api__title') }}
     ul.scroll(v-if="apiList.length" :class="$style.content")
-      li(:class="[$style.listItem, {[$style.active]: appSetting['common.apiSource'] == api.id}]" v-for="(api, index) in apiList" :key="api.id")
+      li(v-for="(api, index) in apiList" :key="api.id" :class="[$style.listItem, {[$style.active]: appSetting['common.apiSource'] == api.id}]")
         div(:class="$style.listLeft")
-          h3 {{api.name}}
-          p {{api.description}}
+          h3 {{ api.name }}
+          p {{ api.description }}
           div
-            base-checkbox(:class="$style.checkbox" :id="`user_api_${api.id}`" v-model="api.allowShowUpdateAlert" @change="handleChangeAllowUpdateAlert(api, $event)" :label="$t('user_api__allow_show_update_alert')")
+            base-checkbox(:id="`user_api_${api.id}`" v-model="api.allowShowUpdateAlert" :class="$style.checkbox" :label="$t('user_api__allow_show_update_alert')" @change="handleChangeAllowUpdateAlert(api, $event)")
         base-btn(:class="$style.listBtn" outline :aria-label="$t('user_api__btn_remove')" @click.stop="handleRemove(index)")
-          svg(version='1.1' xmlns='http://www.w3.org/2000/svg' xlink='http://www.w3.org/1999/xlink' viewBox='0 0 212.982 212.982' space='preserve' v-once)
-            use(xlink:href='#icon-delete')
+          svg(v-once version="1.1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 0 212.982 212.982" space="preserve")
+            use(xlink:href="#icon-delete")
     div(v-else :class="$style.content")
-      div(:class="$style.noitem") {{$t('user_api__noitem')}}
+      div(:class="$style.noitem") {{ $t('user_api__noitem') }}
     div(:class="$style.note")
       p(:class="[$style.ruleLink]")
-        | {{$t('user_api__readme')}}
-        span.hover.underline(@click="handleOpenUrl('https://lyswhut.github.io/lx-music-doc/desktop/custom-source')" aria-label="https://lxmusic.toside.cn/desktop/custom-source") FAQ
-      p {{$t('user_api__note')}}
+        | {{ $t('user_api__readme') }}
+        span.hover.underline(aria-label="https://lxmusic.toside.cn/desktop/custom-source" @click="handleOpenUrl('https://lyswhut.github.io/lx-music-doc/desktop/custom-source')") FAQ
+      p {{ $t('user_api__note') }}
     div(:class="$style.footer")
-      base-btn(:class="$style.footerBtn" @click="handleImport") {{$t('user_api__btn_import')}}
-      //- base-btn(:class="$style.footerBtn" @click="handleExport") {{$t('user_api__btn_export')}}
+      base-btn(:class="$style.footerBtn" @click="handleImport") {{ $t('user_api__btn_import') }}
+      //- base-btn(:class="$style.footerBtn" @click="handleExport") {{ $t('user_api__btn_export') }}
 </template>
 
 <script>
@@ -60,16 +60,16 @@ export default {
         })
         return
       }
-      showSelectDialog({
+      void showSelectDialog({
         title: this.$t('user_api__import_file'),
         properties: ['openFile'],
         filters: [
           { name: 'LX API File', extensions: ['js'] },
           { name: 'All Files', extensions: ['*'] },
         ],
-      }).then(result => {
+      }).then(async result => {
         if (result.canceled) return
-        return readFile(result.filePaths[0]).then(data => {
+        return readFile(result.filePaths[0]).then(async data => {
           return importUserApi(data.toString()).then(({ apiList }) => {
             userApi.list = apiList
           })
@@ -92,10 +92,10 @@ export default {
       this.$emit('update:modelValue', false)
     },
     handleOpenUrl(url) {
-      openUrl(url)
+      void openUrl(url)
     },
     handleChangeAllowUpdateAlert(api, enable) {
-      setAllowShowUserApiUpdateAlert(api.id, enable)
+      void setAllowShowUserApiUpdateAlert(api.id, enable)
     },
   },
 }

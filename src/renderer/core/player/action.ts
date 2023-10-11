@@ -17,6 +17,9 @@ import { getMusicUrl, getPicPath, getLyricInfo } from '../music/index'
 import { filterList } from './utils'
 import { requestMsg } from '@renderer/utils/message'
 import { getRandom } from '@renderer/utils/index'
+import { addListMusics, removeListMusics } from '@renderer/store/list/action'
+import { loveList } from '@renderer/store/list/state'
+import { addDislikeInfo } from '@renderer/core/dislikeList'
 // import { checkMusicFileAvailable } from '@renderer/utils/music'
 
 let gettingUrlId = ''
@@ -52,12 +55,36 @@ const { addDelayNextTimeout: addLoadTimeout, clearDelayNextTimeout: clearLoadTim
  * 检查音乐信息是否已更改
  */
 const diffCurrentMusicInfo = (curMusicInfo: LX.Music.MusicInfo | LX.Download.ListItem): boolean => {
-  return curMusicInfo !== playMusicInfo.musicInfo || isPlay.value
+  // return curMusicInfo !== playMusicInfo.musicInfo || isPlay.value
+  return gettingUrlId != curMusicInfo.id || curMusicInfo.id != playMusicInfo.musicInfo?.id || isPlay.value
 }
 
+let cancelDelayRetry: (() => void) | null = null
+const delayRetry = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListItem, isRefresh = false): Promise<string | null> => {
+  // if (cancelDelayRetry) cancelDelayRetry()
+  return new Promise<string | null>((resolve, reject) => {
+    const time = getRandom(2, 6)
+    setAllStatus(window.i18n.t('player__geting_url_delay_retry', { time }))
+    const tiemout = setTimeout(() => {
+      getMusicPlayUrl(musicInfo, isRefresh, true).then((result) => {
+        cancelDelayRetry = null
+        resolve(result)
+      }).catch(async(err: any) => {
+        cancelDelayRetry = null
+        reject(err)
+      })
+    }, time * 1000)
+    cancelDelayRetry = () => {
+      clearTimeout(tiemout)
+      cancelDelayRetry = null
+      resolve(null)
+    }
+  })
+}
 const getMusicPlayUrl = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListItem, isRefresh = false, isRetryed = false): Promise<string | null> => {
   // this.musicInfo.url = await getMusicPlayUrl(targetSong, type)
   setAllStatus(window.i18n.t('player__geting_url'))
+  if (appSetting['player.autoSkipOnError']) addLoadTimeout()
 
   // const type = getPlayType(appSetting['player.highQuality'], musicInfo)
 
@@ -79,6 +106,8 @@ const getMusicPlayUrl = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListIt
       diffCurrentMusicInfo(musicInfo) ||
       err.message == requestMsg.cancelRequest) return null
 
+    if (err.message == requestMsg.tooManyRequests) return delayRetry(musicInfo, isRefresh)
+
     if (!isRetryed) return getMusicPlayUrl(musicInfo, isRefresh, true)
 
     throw err
@@ -86,7 +115,9 @@ const getMusicPlayUrl = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListIt
 }
 
 export const setMusicUrl = (musicInfo: LX.Music.MusicInfo | LX.Download.ListItem, isRefresh?: boolean) => {
-  if (appSetting['player.autoSkipOnError']) addLoadTimeout()
+  // if (appSetting['player.autoSkipOnError']) addLoadTimeout()
+  if (!diffCurrentMusicInfo(musicInfo)) return
+  if (cancelDelayRetry) cancelDelayRetry()
   gettingUrlId = musicInfo.id
   void getMusicPlayUrl(musicInfo, isRefresh).then((url) => {
     if (!url) return
@@ -152,8 +183,7 @@ const handlePlay = () => {
   }
   const musicInfo = playMusicInfo.musicInfo
 
-  if (!musicInfo || gettingUrlId == musicInfo.id) return
-  gettingUrlId &&= ''
+  if (!musicInfo) return
 
   setStop()
   window.app_event.pause()
@@ -195,10 +225,11 @@ const handlePlay = () => {
  * @param index 播放的歌曲位置
  */
 export const playList = (listId: string, index: number) => {
+  const prevListId = playInfo.playerListId
   setPlayListId(listId)
   pause()
   setPlayMusicInfo(listId, getList(listId)[index])
-  clearPlayedList()
+  if (appSetting['player.isAutoCleanPlayedList'] || prevListId != listId) clearPlayedList()
   clearTempPlayeList()
   handlePlay()
 }
@@ -272,6 +303,7 @@ export const playNext = async(isAutoToggle = false): Promise<void> => {
     list: currentList,
     playedList,
     playerMusicInfo: currentList[playInfo.playerPlayIndex],
+    isNext: true,
   })
 
   if (!filteredList.length) {
@@ -371,6 +403,7 @@ export const playPrev = async(isAutoToggle = false): Promise<void> => {
     list: currentList,
     playedList,
     playerMusicInfo: currentList[playInfo.playerPlayIndex],
+    isNext: false,
   })
   if (!filteredList.length) {
     handleToggleStop()
@@ -457,4 +490,30 @@ export const togglePlay = () => {
   } else {
     play()
   }
+}
+
+/**
+ * 收藏当前播放的歌曲
+ */
+export const collectMusic = () => {
+  if (!playMusicInfo.musicInfo) return
+  void addListMusics(loveList.id, ['progress' in playMusicInfo.musicInfo ? playMusicInfo.musicInfo.metadata.musicInfo : playMusicInfo.musicInfo])
+}
+
+/**
+ * 取消收藏当前播放的歌曲
+ */
+export const uncollectMusic = () => {
+  if (!playMusicInfo.musicInfo) return
+  void removeListMusics({ listId: loveList.id, ids: ['progress' in playMusicInfo.musicInfo ? playMusicInfo.musicInfo.metadata.musicInfo.id : playMusicInfo.musicInfo.id] })
+}
+
+/**
+ * 不喜欢当前播放的歌曲
+ */
+export const dislikeMusic = async() => {
+  if (!playMusicInfo.musicInfo) return
+  const minfo = 'progress' in playMusicInfo.musicInfo ? playMusicInfo.musicInfo.metadata.musicInfo : playMusicInfo.musicInfo
+  await addDislikeInfo([{ name: minfo.name, singer: minfo.singer }])
+  await playNext(true)
 }

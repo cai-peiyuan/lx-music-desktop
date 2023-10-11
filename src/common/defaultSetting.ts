@@ -1,5 +1,5 @@
-import { join } from 'path'
-import { homedir } from 'os'
+import path from 'node:path'
+import os from 'node:os'
 
 const isMac = process.platform == 'darwin'
 const isWin = process.platform == 'win32'
@@ -29,6 +29,7 @@ const defaultSetting: LX.AppSetting = {
   'player.volume': 1,
   'player.isMute': false,
   'player.playbackRate': 1,
+  'player.preservesPitch': true,
   'player.mediaDeviceId': 'default',
   'player.isMediaDeviceRemovedStopPlay': false,
   'player.isShowLyricTranslation': false,
@@ -40,6 +41,24 @@ const defaultSetting: LX.AppSetting = {
   'player.waitPlayEndStop': true,
   'player.waitPlayEndStopTime': '',
   'player.autoSkipOnError': true,
+  'player.isAutoCleanPlayedList': false,
+  'player.soundEffect.convolution.fileName': '',
+  'player.soundEffect.convolution.mainGain': 10,
+  'player.soundEffect.convolution.sendGain': 0,
+  'player.soundEffect.biquadFilter.hz31': 0,
+  'player.soundEffect.biquadFilter.hz62': 0,
+  'player.soundEffect.biquadFilter.hz125': 0,
+  'player.soundEffect.biquadFilter.hz250': 0,
+  'player.soundEffect.biquadFilter.hz500': 0,
+  'player.soundEffect.biquadFilter.hz1000': 0,
+  'player.soundEffect.biquadFilter.hz2000': 0,
+  'player.soundEffect.biquadFilter.hz4000': 0,
+  'player.soundEffect.biquadFilter.hz8000': 0,
+  'player.soundEffect.biquadFilter.hz16000': 0,
+  'player.soundEffect.panner.enable': false,
+  'player.soundEffect.panner.soundR': 5,
+  'player.soundEffect.panner.speed': 25,
+  'player.soundEffect.pitchShifter.playbackRate': 1,
 
   'playDetail.isZoomActiveLrc': false,
   'playDetail.isShowLyricProgressSetting': false,
@@ -57,7 +76,7 @@ const defaultSetting: LX.AppSetting = {
   'desktopLyric.height': 300,
   'desktopLyric.x': null,
   'desktopLyric.y': null,
-  'desktopLyric.isLockScreen': true,
+  'desktopLyric.isLockScreen': isWin,
   'desktopLyric.isDelayScroll': true,
   'desktopLyric.scrollAlign': 'center',
   'desktopLyric.isHoverHide': false,
@@ -84,7 +103,7 @@ const defaultSetting: LX.AppSetting = {
   'list.actionButtonsVisible': false,
 
   'download.enable': false,
-  'download.savePath': join(homedir(), 'Desktop'),
+  'download.savePath': path.join(os.homedir(), 'Desktop'),
   'download.fileName': '歌名 - 歌手',
   'download.maxDownloadNum': 3,
   'download.skipExistFile': true,
@@ -118,8 +137,8 @@ const defaultSetting: LX.AppSetting = {
   'sync.server.maxSsnapshotNum': 5,
   'sync.client.host': '',
 
-  'theme.id': 'blue_plus',
-  // 'theme.id': 'green',
+  // 'theme.id': 'blue_plus',
+  'theme.id': 'green',
   'theme.lightId': 'green',
   'theme.darkId': 'black',
 

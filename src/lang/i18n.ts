@@ -72,11 +72,11 @@ const createI18n = (): I18n => {
       return message
     },
     getMessage(key: keyof Message, val?: TranslateValues): string {
-      let targetMessage = this.message[key] ?? this.messages[this.fallbackLocale][key] ?? ''
+      let targetMessage = this.message[key] ?? this.messages[this.fallbackLocale][key] ?? key
       return val ? this.fillMessage(targetMessage, val) : targetMessage
     },
     t(key: keyof Message, val?: TranslateValues): string {
-      // trackReactivityValues()
+      trackReactivityValues()
       return this.getMessage(key, val)
     },
   }

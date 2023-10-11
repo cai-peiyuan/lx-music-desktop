@@ -1,25 +1,28 @@
 <template lang="pug">
-dt#hot_key {{$t('setting__hot_key')}}
+dt#hot_key {{ $t('setting__hot_key') }}
 dd
-  h3#hot_key_local_title {{$t('setting__hot_key_local_title')}}
+  h3#hot_key_local_title {{ $t('setting__hot_key_local_title') }}
   div
     base-checkbox(id="setting_download_hotKeyLocal" v-model="current_hot_key.local.enable" :label="$t('setting__is_enable')" @change="handleHotKeySaveConfig")
   div(:class="$style.hotKeyContainer" :style="{ opacity: current_hot_key.local.enable ? 1 : .6 }")
-    div(:class="$style.hotKeyItem" v-for="item in allHotKeys.local")
-      h4(:class="$style.hotKeyItemTitle") {{$t('setting__hot_key_' + item.name)}}
-      base-input(:class="$style.hotKeyItemInput" readonly @keyup.prevent :auto-paste="false" :placeholder="$t('setting__hot_key_unset_input')"
-        :value="hotKeyConfig.local[item.name] && formatHotKeyName(hotKeyConfig.local[item.name].key)"
+    div(v-for="(item, index) in allHotKeys.local" :key="index" :class="$style.hotKeyItem")
+      h4(:class="$style.hotKeyItemTitle") {{ $t('setting__hot_key_' + item.name) }}
+      base-input(
+        :class="$style.hotKeyItemInput" readonly :auto-paste="false"
+        :placeholder="$t('setting__hot_key_unset_input')" :value="hotKeyConfig.local[item.name] && formatHotKeyName(hotKeyConfig.local[item.name].key)"
+        @keyup.prevent
         @focus="handleHotKeyFocus($event, item, 'local')"
         @blur="handleHotKeyBlur($event, item, 'local')")
 dd
-  h3#hot_key_global_title {{$t('setting__hot_key_global_title')}}
+  h3#hot_key_global_title {{ $t('setting__hot_key_global_title') }}
   div
     base-checkbox(id="setting_download_hotKeyGlobal" v-model="current_hot_key.global.enable" :label="$t('setting__is_enable')" @change="handleEnableHotKey")
   div(:class="$style.hotKeyContainer" :style="{ opacity: current_hot_key.global.enable ? 1 : .6 }")
-    div(:class="$style.hotKeyItem" v-for="item in allHotKeys.global")
-      h4(:class="$style.hotKeyItemTitle") {{$t('setting__hot_key_' + item.name)}}
-      base-input(:class="[$style.hotKeyItemInput, hotKeyConfig.global[item.name] && hotKeyStatus[hotKeyConfig.global[item.name].key] && hotKeyStatus[hotKeyConfig.global[item.name].key].status === false ? $style.hotKeyFailed : null]"
-        :value="hotKeyConfig.global[item.name] && formatHotKeyName(hotKeyConfig.global[item.name].key)" @input.prevent :auto-paste="false" readonly :placeholder="$t('setting__hot_key_unset_input')"
+    div(v-for="(item, index) in allHotKeys.global" :key="index" :class="$style.hotKeyItem")
+      h4(:class="$style.hotKeyItemTitle") {{ $t('setting__hot_key_' + item.name) }}
+      base-input(
+        :class="[$style.hotKeyItemInput, hotKeyConfig.global[item.name] && hotKeyStatus[hotKeyConfig.global[item.name].key] && hotKeyStatus[hotKeyConfig.global[item.name].key].status === false ? $style.hotKeyFailed : null]"
+        :value="hotKeyConfig.global[item.name] && formatHotKeyName(hotKeyConfig.global[item.name].key)" :auto-paste="false" readonly :placeholder="$t('setting__hot_key_unset_input')" @input.prevent
         @focus="handleHotKeyFocus($event, item, 'global')"
         @blur="handleHotKeyBlur($event, item, 'global')")
 </template>
@@ -131,6 +134,7 @@ export default {
         if (config) {
           if (config.key == newHotKey) return
           originKey = config.key
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete current_hot_key.value[type].keys[config.key]
         } else if (!newHotKey) return
 
@@ -140,6 +144,7 @@ export default {
             config = tempInfo.keys[newHotKey]
             if (config) {
               console.log(newHotKey, info, config, info.name, config.name)
+              // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
               delete current_hot_key.value[tempType].keys[newHotKey]
               break
             }
@@ -200,7 +205,7 @@ export default {
       await handleHotKeySaveConfig()
       await getHotKeyStatus()
     }
-    const getHotKeyStatus = () => {
+    const getHotKeyStatus = async() => {
       return hotKeyGetStatus().then(status => {
         // console.log(status)
         hotKeyStatus.value = status
@@ -210,7 +215,7 @@ export default {
 
     current_hot_key.value = window.lx.appHotKeyConfig
     initHotKeyConfig()
-    getHotKeyStatus()
+    void getHotKeyStatus()
 
     window.app_event.on('keyDown', handleKeyDown)
 
@@ -272,34 +277,34 @@ export default {
   text-decoration: line-through;
 }
 
-.del-line {
-  position: relative;
-  &:before {
-    display: block;
-    height: 1px;
-    position: absolute;
-    width: 110%;
-    content: ' ';
-    left: 0;
-    background-color: #000;
-    transform: rotate(-24deg);
-    transform-origin: 0;
-    top: 83%;
-    z-index: 1;
-  }
-  &:after {
-    display: block;
-    height: 1px;
-    position: absolute;
-    width: 110%;
-    content: ' ';
-    left: 0;
-    background-color: #000;
-    transform: rotate(23deg);
-    transform-origin: 0px;
-    top: 2px;
-    z-index: 1;
-  }
-}
+// .delLine {
+//   position: relative;
+//   &:before {
+//     display: block;
+//     height: 1px;
+//     position: absolute;
+//     width: 110%;
+//     content: ' ';
+//     left: 0;
+//     background-color: #000;
+//     transform: rotate(-24deg);
+//     transform-origin: 0;
+//     top: 83%;
+//     z-index: 1;
+//   }
+//   &:after {
+//     display: block;
+//     height: 1px;
+//     position: absolute;
+//     width: 110%;
+//     content: ' ';
+//     left: 0;
+//     background-color: #000;
+//     transform: rotate(23deg);
+//     transform-origin: 0px;
+//     top: 2px;
+//     z-index: 1;
+//   }
+// }
 
 </style>

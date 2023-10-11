@@ -20,26 +20,21 @@ module.exports = {
       type: 'commonjs2',
     },
     path: path.join(__dirname, '../../dist'),
-    publicPath: 'auto',
+    publicPath: '',
   },
   resolve: {
     alias: {
-      '@': path.join(__dirname, '../../src'),
+      '@root': path.join(__dirname, '../../src'),
       '@main': path.join(__dirname, '../../src/main'),
       '@renderer': path.join(__dirname, '../../src/renderer'),
       '@lyric': path.join(__dirname, '../../src/renderer-lyric'),
       '@static': path.join(__dirname, '../../src/static'),
       '@common': path.join(__dirname, '../../src/common'),
     },
-    extensions: ['.tsx', '.ts', '.js', '.json', '.vue', '.node'],
+    extensions: ['.tsx', '.ts', '.js', '.json', '.node'],
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,
-      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
@@ -48,6 +43,12 @@ module.exports = {
           options: {
             appendTsSuffixTo: [/\.vue$/],
           },
+        },
+        parser: {
+          worker: [
+            '*audioContext.audioWorklet.addModule()',
+            '...',
+          ],
         },
       },
       {

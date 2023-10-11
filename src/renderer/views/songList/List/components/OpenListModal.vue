@@ -1,5 +1,5 @@
 <template>
-  <material-modal :show="props.modelValue" teleport="#view" width="60%" bg-close @close="emit('update:modelValue', $event)" @after-enter="$refs.input.focus()">
+  <material-modal :show="props.modelValue" teleport="#view" width="60%" @close="emit('update:model-value', $event)" @after-enter="$refs.input.focus()">
     <main :class="$style.main">
       <h2>{{ $t('songlist__import_input_title') }}</h2>
       <div :class="$style.inputContent">
@@ -49,7 +49,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:model-value'])
 
 const router = useRouter()
 const route = useRoute()
@@ -65,7 +65,7 @@ watch(() => props.modelValue, (visible) => {
 const handleSubmit = () => {
   if (!text.value.length) return
   setOpenSongListInputInfo(text.value, source.value)
-  router.push({
+  void router.push({
     path: '/songList/detail',
     query: {
       source: source.value,

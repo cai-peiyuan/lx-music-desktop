@@ -1,5 +1,4 @@
 // 设置窗口位置、大小
-export const padding = 8
 export let minWidth = 80
 export let minHeight = 50
 
@@ -21,25 +20,23 @@ export const getLyricWindowBounds = (bounds: Electron.Rectangle, { x = 0, y = 0,
 
   if (global.lx.appSetting['desktopLyric.isLockScreen']) {
     if (!global.envParams.workAreaSize) return bounds
-    const maxWinW = global.envParams.workAreaSize.width + padding * 2
-    const maxWinH = global.envParams.workAreaSize.height + padding * 2
+    const maxWinW = global.envParams.workAreaSize.width
+    const maxWinH = global.envParams.workAreaSize.height
 
     if (w > maxWinW) w = maxWinW
     if (h > maxWinH) h = maxWinH
 
-    const maxX = global.envParams.workAreaSize.width + padding - w
-    const minX = -padding
-    const maxY = global.envParams.workAreaSize.height + padding - h
-    const minY = -padding
+    const maxX = global.envParams.workAreaSize.width - w
+    const maxY = global.envParams.workAreaSize.height - h
 
     x += bounds.x
     y += bounds.y
 
     if (x > maxX) x = maxX
-    else if (x < minX) x = minX
+    else if (x < 0) x = 0
 
     if (y > maxY) y = maxY
-    else if (y < minY) y = minY
+    else if (y < 0) y = 0
   } else {
     y += bounds.y
     x += bounds.x
@@ -90,7 +87,6 @@ export const watchConfigKeys = [
 export const buildLyricConfig = (appSetting: Partial<LX.AppSetting>): Partial<LX.DesktopLyric.Config> => {
   const setting: Partial<LX.DesktopLyric.Config> = {}
   for (const key of watchConfigKeys) {
-    // @ts-expect-error
     if (key in appSetting) setting[key] = appSetting[key]
   }
   return setting
@@ -101,10 +97,10 @@ export const initWindowSize = (x: LX.AppSetting['desktopLyric.x'], y: LX.AppSett
     if (width < minWidth) width = minWidth
     if (height < minHeight) height = minHeight
     if (global.envParams.workAreaSize) {
-      x = global.envParams.workAreaSize.width + padding - width
-      y = global.envParams.workAreaSize.height + padding - height
+      x = global.envParams.workAreaSize.width - width
+      y = global.envParams.workAreaSize.height - height
     } else {
-      x = y = -padding
+      x = y = 0
     }
   } else {
     let bounds = getLyricWindowBounds({ x, y, width, height }, { x: 0, y: 0, w: width, h: height })

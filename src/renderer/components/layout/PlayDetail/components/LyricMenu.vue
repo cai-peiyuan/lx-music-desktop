@@ -2,10 +2,10 @@
   <teleport to="#root">
     <div ref="dom_menu" :class="$style.container" :style="menuStyles" :aria-hidden="!modelValue">
       <!-- <div :class="$style.group">
-      <div :class="$style.title">{{$t('lyric_menu__align')}}</div>
+      <div :class="$style.title">{{ $t('lyric_menu__align') }}</div>
       <div :class="$style.subGroup">
-        <div :class="[$style.btn, { [$style.active]: appSetting['playDetail.style.align'] == 'left' }]" role="button" @click="setFontAlign('left')" ignore-tip :aria-label="$t('lyric_menu__align_left')">{{$t('lyric_menu__align_left')}}</div>
-        <div :class="[$style.btn, { [$style.active]: appSetting['playDetail.style.align'] == 'center' }]" role="button" @click="setFontAlign('center')" ignore-tip :aria-label="$t('lyric_menu__align_center')">{{$t('lyric_menu__align_center')}}</div>
+        <div :class="[$style.btn, { [$style.active]: appSetting['playDetail.style.align'] == 'left' }]" role="button" @click="setFontAlign('left')" ignore-tip :aria-label="$t('lyric_menu__align_left')">{{ $t('lyric_menu__align_left') }}</div>
+        <div :class="[$style.btn, { [$style.active]: appSetting['playDetail.style.align'] == 'center' }]" role="button" @click="setFontAlign('center')" ignore-tip :aria-label="$t('lyric_menu__align_center')">{{ $t('lyric_menu__align_center') }}</div>
       </div>
     </div> -->
       <div :class="$style.group">
@@ -55,10 +55,10 @@ const offsetTagRxp = /(?:^|\n)\s*\[offset:\s*(\S+(?:\d+)*)\s*\]/
 const offsetTagAllRxp = /(^|\n)\s*\[offset:\s*(\S+(?:\d+)*)\s*\]/g
 
 const saveLyric = debounce((musicInfo, lyricInfo) => {
-  saveLyricEdited(musicInfo, lyricInfo)
+  void saveLyricEdited(musicInfo, lyricInfo)
 })
 const removeLyric = debounce(musicInfo => {
-  removeLyricEdited(musicInfo)
+  void removeLyricEdited(musicInfo)
 })
 
 const getOffset = lrc => {

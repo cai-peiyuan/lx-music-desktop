@@ -1,4 +1,4 @@
-const { getNow, TimeoutTools } = require('./utils')
+import { getNow, TimeoutTools } from './utils'
 
 // const fontFormateRxp = /(?=<\d+,\d+>).*?/g
 const fontSplitRxp = /(?=<\d+,\d+>).*?/g
@@ -25,7 +25,7 @@ const createAnimation = (dom, duration, isVertical) => new window.Animation(new 
 // https://jsfiddle.net/ceqpnbky/
 // https://jsfiddle.net/ceqpnbky/1/
 
-module.exports = class FontPlayer {
+export default class FontPlayer {
   constructor({
     time = 0,
     rate = 1,
@@ -69,8 +69,8 @@ module.exports = class FontPlayer {
 
     this.lineContent = null
 
-    this.timeoutTools = new TimeoutTools(80)
-    this.waitPlayTimeout = new TimeoutTools(80)
+    this.timeoutTools = new TimeoutTools(50)
+    this.waitPlayTimeout = new TimeoutTools(50)
 
     this._init()
   }
@@ -133,8 +133,8 @@ module.exports = class FontPlayer {
     // let lineText = ''
     let lrcShadowContent
     for (const font of fonts) {
+      if (!timeRxp.test(font)) return this._handleLineParse()
       text = font.replace(timeRxp, '')
-      if (RegExp.$2 == '') return this._handleLineParse()
       const time = parseInt(RegExp.$2)
 
       const dom = document.createElement('span')

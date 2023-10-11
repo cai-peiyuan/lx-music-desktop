@@ -6,6 +6,9 @@ import { useI18n } from '@renderer/plugins/i18n'
 import { removeListMusics } from '@renderer/store/list/action'
 import { appSetting } from '@renderer/store/setting'
 import { toOldMusicInfo } from '@renderer/utils/index'
+import { addDislikeInfo, hasDislike } from '@renderer/core/dislikeList'
+import { playNext } from '@renderer/core/player'
+import { playMusicInfo } from '@renderer/store/player/state'
 
 
 export default ({ props, list, selectedList, removeAllSelect }) => {
@@ -34,11 +37,25 @@ export default ({ props, list, selectedList, removeAllSelect }) => {
     clipboardWriteText(appSetting['download.fileName'].replace('歌名', minfo.name).replace('歌手', minfo.singer))
   }
 
+  const handleDislikeMusic = async(index) => {
+    const minfo = list.value[index]
+    const confirm = await dialog.confirm({
+      message: t('lists__dislike_music_tip', { name: minfo.name }),
+      cancelButtonText: t('cancel_button_text_2'),
+      confirmButtonText: t('confirm_button_text'),
+    })
+    if (!confirm) return
+    await addDislikeInfo([{ name: minfo.name, singer: minfo.singer }])
+    if (hasDislike(playMusicInfo.musicInfo)) {
+      playNext(true)
+    }
+  }
+
   const handleRemoveMusic = async(index, single) => {
     if (selectedList.value.length && !single) {
       const confirm = await (selectedList.value.length > 1
         ? dialog.confirm({
-          message: t('lists__remove music_tip', { len: selectedList.value.length }),
+          message: t('lists__remove_music_tip', { len: selectedList.value.length }),
           confirmButtonText: t('lists__remove_tip_button'),
         })
         : Promise.resolve(true)
@@ -55,6 +72,7 @@ export default ({ props, list, selectedList, removeAllSelect }) => {
     handleSearch,
     handleOpenMusicDetail,
     handleCopyName,
+    handleDislikeMusic,
     handleRemoveMusic,
   }
 }

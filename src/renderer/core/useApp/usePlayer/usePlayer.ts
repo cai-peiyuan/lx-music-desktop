@@ -3,7 +3,7 @@ import { useI18n } from '@renderer/plugins/i18n'
 import { setTitle } from '@renderer/utils'
 
 import {
-  setLoopPlay, setPause, setStop,
+  setPause, setStop,
 } from '@renderer/plugins/player'
 
 import useMediaSessionInfo from './useMediaSessionInfo'
@@ -29,8 +29,9 @@ import useLyric from './useLyric'
 import useVolume from './useVolume'
 import useWatchList from './useWatchList'
 import { HOTKEY_PLAYER } from '@common/hotKey'
-import { playNext, pause, playPrev, togglePlay } from '@renderer/core/player'
+import { playNext, pause, playPrev, togglePlay, collectMusic, uncollectMusic, dislikeMusic } from '@renderer/core/player'
 import usePlaybackRate from './usePlaybackRate'
+import useSoundEffect from './useSoundEffect'
 
 
 export default () => {
@@ -41,6 +42,7 @@ export default () => {
   usePlayEvent()
   useLyric()
   useVolume()
+  useSoundEffect()
   usePlaybackRate()
   useWatchList()
 
@@ -89,17 +91,20 @@ export default () => {
   }
 
   watch(() => appSetting['player.togglePlayMethod'], newValue => {
-    setLoopPlay(newValue == 'singleLoop')
+    // setLoopPlay(newValue == 'singleLoop')
     if (playedList.length) clearPlayedList()
     if (newValue == 'random' && playMusicInfo.musicInfo && !playMusicInfo.isTempPlay) addPlayedList({ ...(playMusicInfo as LX.Player.PlayMusicInfo) })
   })
 
-  setLoopPlay(appSetting['player.togglePlayMethod'] == 'singleLoop')
+  // setLoopPlay(appSetting['player.togglePlayMethod'] == 'singleLoop')
 
 
   window.key_event.on(HOTKEY_PLAYER.next.action, handlePlayNext)
   window.key_event.on(HOTKEY_PLAYER.prev.action, handlePlayPrev)
   window.key_event.on(HOTKEY_PLAYER.toggle_play.action, togglePlay)
+  window.key_event.on(HOTKEY_PLAYER.music_love.action, collectMusic)
+  window.key_event.on(HOTKEY_PLAYER.music_unlove.action, uncollectMusic)
+  window.key_event.on(HOTKEY_PLAYER.music_dislike.action, dislikeMusic)
 
   window.app_event.on('play', setPlayStatus)
   window.app_event.on('pause', setPauseStatus)
@@ -117,6 +122,10 @@ export default () => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     window.key_event.off(HOTKEY_PLAYER.prev.action, handlePlayPrev)
     window.key_event.off(HOTKEY_PLAYER.toggle_play.action, togglePlay)
+    window.key_event.off(HOTKEY_PLAYER.music_love.action, collectMusic)
+    window.key_event.off(HOTKEY_PLAYER.music_unlove.action, uncollectMusic)
+    window.key_event.off(HOTKEY_PLAYER.music_dislike.action, dislikeMusic)
+
 
     window.app_event.off('play', setPlayStatus)
     window.app_event.off('pause', setPauseStatus)

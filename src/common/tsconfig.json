@@ -1,16 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "nodenext",
-    "typeRoots": [                                       /* Specify multiple folders that act like './node_modules/@types'. */
+    "typeRoots": [
       "./types"
     ],
+    "paths": {                                           /* Specify a set of entries that re-map imports to additional lookup locations. */
+      "@common/*": ["common/*"],
+    },
   },
-  // "include": [
-	//   "**/*.ts",
-	//   "**/*.js",
-	//   "**/*.vue",
-	//   "**/*.json",
-	// ],
 }
